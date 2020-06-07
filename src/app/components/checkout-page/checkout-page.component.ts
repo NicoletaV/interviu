@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductsService } from 'src/app/services/products.service';
+import { CurrenciesService } from 'src/app/services/currencies.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -8,12 +9,15 @@ import { ProductsService } from 'src/app/services/products.service';
 })
 export class CheckoutPageComponent implements OnInit {
 
-  constructor(private productsService: ProductsService) { }
+  constructor(private productsService: ProductsService, private currenciesService: CurrenciesService) { }
 
   products: any = [];
   checkout_products: any = [];
   cart_products: any = [];
   total_price: any = 0;
+
+  currency_rates: any = [];
+  selectedCurrency: any = {};
 
   ngOnInit(): void {
     this.getProducts();
@@ -26,6 +30,7 @@ export class CheckoutPageComponent implements OnInit {
         this.products.sort(this.compareByPrice);
         this.checkout_products = this.products;
         this.cart_products = [];
+        this.getCurrencyRates();
       })
       .catch((err) => {
         console.log(err);
@@ -42,6 +47,21 @@ export class CheckoutPageComponent implements OnInit {
     }
 
     return 0;
+  }
+
+  getCurrencyRates() {
+    this.currenciesService.getCurrencyRates().toPromise()
+      .then((data: any) => {
+        var rates = JSON.parse(JSON.stringify(data.rates));
+        this.currency_rates.push({ name: 'USD', value: rates.USD });
+        this.currency_rates.push({ name: 'EUR', value: rates.EUR });
+        this.currency_rates.push({ name: 'GBP', value: rates.GBP });
+        this.currency_rates.push({ name: 'RON', value: rates.RON });
+        this.selectedCurrency = this.currency_rates[0];
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   }
 
   addToCart(index) {
@@ -70,6 +90,12 @@ export class CheckoutPageComponent implements OnInit {
       this.cart_products[index].total = this.cart_products[index].quantity * this.cart_products[index].price;
       this.total_price += this.cart_products[index].total;
     }
+  }
+
+  changeCurrency(index) {
+    this.selectedCurrency = this.currency_rates[index];
+    console.log(this.selectedCurrency);
+    // sa pun moneda peste tot this.selectedCurrency, dar sa fac si transformarile in monede
   }
 
 }

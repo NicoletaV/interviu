@@ -11,7 +11,7 @@
 .column {
     float: left;
     width: 50%;
-    height: 450px;
+    height: 430px;
 }
 
 #right {
@@ -50,4 +50,12 @@
     width: 90%;
     margin-left: 25px;
     margin-right: 25px;
+}
+
+.select {
+    margin-top: 20px;
+}
+
+#select {
+    font-size: 1.5em;
 }
