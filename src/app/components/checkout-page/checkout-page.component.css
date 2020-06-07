@@ -11,12 +11,8 @@
 .column {
     float: left;
     width: 50%;
-    height: 200px;
+    height: 450px;
 }
-
-/* #left {    
-    background-color: #F8F8F8;
-} */
 
 #right {
     background-color: #E8E8E8;
@@ -37,3 +33,21 @@
     bottom: 5px;
 }
 
+.message {
+    text-align: center;
+}
+
+.quantity {
+    width: 5em
+}
+
+.total {
+    text-align: right;
+    margin-right: 20px;
+}
+
+.continue {
+    width: 90%;
+    margin-left: 25px;
+    margin-right: 25px;
+}

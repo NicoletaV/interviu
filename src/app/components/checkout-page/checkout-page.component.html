@@ -7,12 +7,12 @@
         <div class="row">
             <div class="column" id="left">
                 <ul class="list-group">
-                    <li class="list-group-item" *ngFor="let product of products">
+                    <li class="list-group-item" *ngFor="let product of checkout_products; let idx = index">
                         {{ product.name }}
                         <span class="price">
                             Price: <span class="value">{{ product.price | currency }}</span>
                         </span>
-                        <button type="button" class="btn btn-success cart">
+                        <button type="button" class="btn btn-success cart" (click)="addToCart(idx)">
                             <i class="fa fa-shopping-cart"></i> Add to cart
                         </button>
                     </li>
@@ -20,7 +20,44 @@
             </div>
 
             <div class="column" id="right">
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No products in your shopping cart</p>
+                <p class="message" *ngIf="!cart_products.length">No products in your shopping cart</p>
+                <p class="message" *ngIf="cart_products.length">Products in your shopping cart</p>
+                <table class="table table-striped" *ngIf="cart_products.length">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let product of cart_products; let idx = index">
+                            <td>
+                                <button type="button" class="btn btn-sm" (click)="deleteFromCart(idx)">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                                {{ product.name }}   
+                                <i class="fa fa-info-circle" data-toggle="tooltip"
+                                    title="{{ product.description }}" data-placement="auto">
+                                </i>                                       
+                            </td>
+                            <td>
+                                <input #quantity type="number" class="quantity" min="1" value="1"
+                                    (input)="updateQuantity(quantity, idx)">
+                            </td>
+                            <td>
+                                {{ cart_products[idx].total | currency }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr>
+                <p class="total" *ngIf="cart_products.length">
+                    <b>Total: {{ total_price | currency }}</b>
+                </p>
+                <button *ngIf="cart_products.length" type="button"
+                    class="btn btn-success continue">Continue</button> 
             </div>
         </div>
     </div>
