@@ -1,0 +1,39 @@
+
+.container {
+    height: 85vh;
+}
+
+.subtitle{
+    margin-top: 90px;
+    margin-bottom: 10px;
+}
+
+.column {
+    float: left;
+    width: 50%;
+    height: 200px;
+}
+
+/* #left {    
+    background-color: #F8F8F8;
+} */
+
+#right {
+    background-color: #E8E8E8;
+}
+
+.price {
+    position: absolute;
+    right: 200px;
+}
+
+.value {
+    color: #0039e6;
+}
+
+.cart {
+    position: absolute;
+    right: 10px;
+    bottom: 5px;
+}
+

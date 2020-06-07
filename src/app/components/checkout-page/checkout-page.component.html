@@ -1,1 +1,27 @@
-<p>checkout-page works!</p>
+<body>
+    <div class="container">
+        <div class="row subtitle">
+            <h3>Checkout page</h3>
+        </div>
+        
+        <div class="row">
+            <div class="column" id="left">
+                <ul class="list-group">
+                    <li class="list-group-item" *ngFor="let product of products">
+                        {{ product.name }}
+                        <span class="price">
+                            Price: <span class="value">{{ product.price | currency }}</span>
+                        </span>
+                        <button type="button" class="btn btn-success cart">
+                            <i class="fa fa-shopping-cart"></i> Add to cart
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="column" id="right">
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No products in your shopping cart</p>
+            </div>
+        </div>
+    </div>
+</body>
