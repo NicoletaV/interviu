@@ -17,7 +17,6 @@ export class CheckoutPageComponent implements OnInit {
   total_price: any = 0;
 
   currency_rates: any = [];
-  selectedCurrency: any = {};
 
   ngOnInit(): void {
     this.getProducts();
@@ -54,10 +53,12 @@ export class CheckoutPageComponent implements OnInit {
       .then((data: any) => {
         var rates = JSON.parse(JSON.stringify(data.rates));
         this.currency_rates.push({ name: 'USD', value: rates.USD });
-        this.currency_rates.push({ name: 'EUR', value: rates.EUR });
+        this.currency_rates.push({ name: 'EUR', value: rates.EUR });        
         this.currency_rates.push({ name: 'GBP', value: rates.GBP });
-        this.currency_rates.push({ name: 'RON', value: rates.RON });
-        this.selectedCurrency = this.currency_rates[0];
+
+        this.checkout_products.forEach((elem) => {
+          elem.currency = 'USD';
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -92,10 +93,38 @@ export class CheckoutPageComponent implements OnInit {
     }
   }
 
-  changeCurrency(index) {
-    this.selectedCurrency = this.currency_rates[index];
-    console.log(this.selectedCurrency);
-    // sa pun moneda peste tot this.selectedCurrency, dar sa fac si transformarile in monede
+  changeCurrency(selectedCurrency) {
+    let old_currency;
+    if (this.checkout_products[0]) {
+      old_currency = this.checkout_products[0].currency;
+    } else {
+      old_currency = this.cart_products[0].currency;
+    }
+
+    let old_currency_rate = this.currency_rates.find((rate) => {
+      return rate.name == old_currency;
+    }).value;
+
+    let new_currency  = selectedCurrency;
+
+    let new_currency_rate = this.currency_rates.find((rate) => {
+      return rate.name == new_currency;
+    }).value;
+
+    this.checkout_products.forEach((product) => {
+      product.price *= new_currency_rate;
+      product.price /= old_currency_rate;
+      product.currency = new_currency;
+    });
+
+    this.total_price = 0;
+    this.cart_products.forEach((product) => {
+      product.price *= new_currency_rate;
+      product.price /= old_currency_rate;
+      product.currency = new_currency;
+      product.total = product.quantity * product.price;
+      this.total_price += product.total;
+    });
   }
 
 }

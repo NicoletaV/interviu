@@ -10,7 +10,7 @@
                     <li class="list-group-item" *ngFor="let product of checkout_products; let idx = index">
                         {{ product.name }}
                         <span class="price">
-                            Price: <span class="value">{{ product.price | currency }}</span>
+                            Price: <span class="value">{{ product.price | currency: product.currency }}</span>
                         </span>
                         <button type="button" class="btn btn-success cart" (click)="addToCart(idx)">
                             <i class="fa fa-shopping-cart"></i> Add to cart
@@ -21,7 +21,7 @@
                 <div class="select">
                     <label id="select">Select currency:&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select class="selectpicker" (change)="changeCurrency($event.target.value)">
-                        <option *ngFor="let currency of currency_rates; let idx = index" value="{{idx}}">
+                        <option *ngFor="let currency of currency_rates" value="{{ currency.name }}">
                             {{ currency.name }}
                         </option>
                     </select>
@@ -56,14 +56,14 @@
                                     (input)="updateQuantity(quantity, idx)">
                             </td>
                             <td>
-                                {{ cart_products[idx].total | currency }}
+                                {{ cart_products[idx].total | currency: cart_products[idx].currency }}
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <hr>
                 <p class="total" *ngIf="cart_products.length">
-                    <b>Total: {{ total_price | currency }}</b>
+                    <b>Total: {{ total_price | currency: cart_products[0].currency }}</b>
                 </p>
                 <button *ngIf="cart_products.length" type="button"
                     class="btn btn-success continue">Continue</button> 
