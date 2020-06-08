@@ -5,7 +5,8 @@ import { CheckoutPageComponent } from './components/checkout-page/checkout-page.
 
 const routes: Routes = [
   { path: '', redirectTo: 'checkout', pathMatch: 'full' },
-  { path: 'checkout', component: CheckoutPageComponent }
+  { path: 'checkout', component: CheckoutPageComponent },
+  { path: 'checkout/:currency', component: CheckoutPageComponent }  
 ];
 
 @NgModule({

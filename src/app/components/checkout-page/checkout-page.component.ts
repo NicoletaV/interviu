@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductsService } from 'src/app/services/products.service';
 import { CurrenciesService } from 'src/app/services/currencies.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-checkout-page',
@@ -9,7 +10,8 @@ import { CurrenciesService } from 'src/app/services/currencies.service';
 })
 export class CheckoutPageComponent implements OnInit {
 
-  constructor(private productsService: ProductsService, private currenciesService: CurrenciesService) { }
+  constructor(private productsService: ProductsService, private currenciesService: CurrenciesService,
+      private route: ActivatedRoute, private router: Router) { }
 
   products: any = [];
   checkout_products: any = [];
@@ -17,9 +19,22 @@ export class CheckoutPageComponent implements OnInit {
   total_price: any = 0;
 
   currency_rates: any = [];
+  url_currency: any = '';
 
   ngOnInit(): void {
+    this.getUrlCurrency();
     this.getProducts();
+  }
+
+  getUrlCurrency () {
+    this.route.paramMap.subscribe(params => {
+      let param_url = params.get("currency");
+      if (param_url && ['USD', 'EUR', 'GBP'].includes(param_url.toUpperCase())) {
+        this.url_currency = param_url.toUpperCase();
+      } else {
+        this.router.navigate(['checkout']);
+      }
+    });
   }
 
   getProducts() {
@@ -57,7 +72,11 @@ export class CheckoutPageComponent implements OnInit {
         this.currency_rates.push({ name: 'GBP', value: rates.GBP });
 
         this.checkout_products.forEach((elem) => {
-          elem.currency = 'USD';
+          if (!this.url_currency) {
+            elem.currency = 'USD';
+          } else {
+            elem.currency = this.url_currency;
+          }
         });
       })
       .catch((err) => {

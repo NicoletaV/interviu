@@ -21,9 +21,14 @@
                 <div class="select">
                     <label id="select">Select currency:&nbsp;&nbsp;&nbsp;&nbsp;</label>
                     <select class="selectpicker" (change)="changeCurrency($event.target.value)">
-                        <option *ngFor="let currency of currency_rates" value="{{ currency.name }}">
-                            {{ currency.name }}
+                        <option *ngIf="url_currency" selected value="url_currency">
+                            {{ url_currency }}
                         </option>
+                        <ng-container *ngFor="let currency of currency_rates">
+                            <option *ngIf="currency.name != url_currency" value="{{ currency.name }}">
+                                {{ currency.name }}
+                            </option>
+                        </ng-container>
                     </select>
                 </div>
             </div>
