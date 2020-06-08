@@ -10,22 +10,30 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class CheckoutPageComponent implements OnInit {
 
-  constructor(private productsService: ProductsService, private currenciesService: CurrenciesService,
-      private route: ActivatedRoute, private router: Router) { }
+  constructor(
+    private productsService: ProductsService,       // service used to get products from pdf api
+    private currenciesService: CurrenciesService,   // service used to get products from pdf api
+    private route: ActivatedRoute,                  // service used to get params from url 
+    private router: Router                          // service used to navigate to specified url
+    ) {}
 
-  products: any = [];
-  checkout_products: any = [];
-  cart_products: any = [];
-  total_price: any = 0;
+  products: any = [];                               // array of products
+  checkout_products: any = [];                      // array containing elements from left box (checkout)
+  cart_products: any = [];                          // array containing elements from right box (cart)
+  total_price: any = 0;                             // total amount displayed at the bottom of cart box
 
-  currency_rates: any = [];
-  url_currency: any = '';
+  currency_rates: any = [];                         // array of currency rates from pdf api
+  url_currency: any = '';                           // used to store url currency name if valid
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.getUrlCurrency();
     this.getProducts();
   }
 
+  /**
+   * The function takes currency parameter from url and saves it if
+   * it's valid; otherwise, it refreshes the checkout page.
+   */
   getUrlCurrency () {
     this.route.paramMap.subscribe(params => {
       let param_url = params.get("currency");
@@ -37,6 +45,11 @@ export class CheckoutPageComponent implements OnInit {
     });
   }
 
+  /**
+   * This function gets the products array through ProductsService, using HttpClient
+   * "get" request, then sort it descending by price and initialise checkout and cart
+   * products. After that, "getCurrencyRates" function is called.
+   */
   getProducts() {
     this.productsService.getProducts().toPromise()
       .then((data) => {
@@ -51,6 +64,10 @@ export class CheckoutPageComponent implements OnInit {
       })
   }
 
+  /**
+   * This function takes 2 elements and compare them by price field. It's called
+   * when an array is sorted. 
+   */
   compareByPrice(a, b) {
     if (a.price < b.price) {
       return 1;
@@ -63,6 +80,12 @@ export class CheckoutPageComponent implements OnInit {
     return 0;
   }
 
+  /**
+   * This function gets the rates array through CurrenciesService, using
+   * HttpClient "get" request, and then stores the specified currency names
+   * and values into the "currency_rates" array. It adds a new field "currency"
+   * on "checkout_products" array elements, initialised accordingly.
+   */
   getCurrencyRates() {
     this.currenciesService.getCurrencyRates().toPromise()
       .then((data: any) => {
@@ -84,6 +107,14 @@ export class CheckoutPageComponent implements OnInit {
       })
   }
 
+  /**
+   * This function is triggered when "Add to cart" button is being pressed.
+   * It receives the index of the chosen product element from checkout list.
+   * The product is pushed into cart array; "quantity" and "total" fields are
+   * added and initialised, also the "total_price" variable is updated.
+   * After these operations, the selected element is removed from checkout
+   * products list.
+   */
   addToCart(index) {
     this.cart_products.push(this.checkout_products[index]);
 
@@ -95,6 +126,13 @@ export class CheckoutPageComponent implements OnInit {
     this.checkout_products.splice(index, 1);
   }
 
+  /**
+   * This function is triggered when remove "X" button is being pressed.
+   * It receives the index of the chosen product element from cart list.
+   * The product is pushed into checkout array and sorted again by price;
+   * the "total_price" variable is updated. After these operations, the
+   * selected element is removed from cart products list.  
+   */
   deleteFromCart(index) {
     this.checkout_products.push(this.cart_products[index]);
     this.checkout_products.sort(this.compareByPrice);
@@ -103,6 +141,15 @@ export class CheckoutPageComponent implements OnInit {
     this.cart_products.splice(index, 1);
   }
 
+  /**
+   * This function is triggered when the user modifies a product quantity
+   * from the cart table. It doesn't do anything if the value received is
+   * not a valid number: a positive not null integer. Otherwise, the "quantity"
+   * field of the selected cart product is updated, the "total" field is
+   * substracted from the "total_price", and then is updated with the new
+   * value (new quantity * price), finally the new "total" field is added
+   * to the "total_price".
+   */
   updateQuantity($event, index) {
     if ($event.value > 0) {
       this.cart_products[index].quantity = $event.value;
@@ -112,6 +159,20 @@ export class CheckoutPageComponent implements OnInit {
     }
   }
 
+  /**
+   * The function is triggered when the user selects a currency from the
+   * currency selector. It receives the currency name: "selectedCurrency".
+   * Then, needed variables are initialised:
+   * "old_currency" - the name of the currency before being changed
+   * "old_currency_rate" - the official value for the old currency, from currency_rates
+   * "new_currency" - the name of the chosen currency ("selectedCurrency")
+   * "new_currency_rate" - the official value for the new currency, from currency_rates
+   * After having these values, "price" and "currency" fields from "checkout_products"
+   * and "cart_products" arrays are updated. For "price" it uses the formula:
+   * (new price) = (old price * new currency rate) / (old currency rate)
+   * Furthermore, for the cart products it updates the "total" field and the
+   * variable "total_price" too.
+   */
   changeCurrency(selectedCurrency) {
     let old_currency;
     if (this.checkout_products[0]) {
@@ -145,5 +206,4 @@ export class CheckoutPageComponent implements OnInit {
       this.total_price += product.total;
     });
   }
-
 }
